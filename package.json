@@ -1,7 +1,7 @@
 {
-  "name": "@ckeditor/ckeditor5-upload",
+  "name": "@suhayb/ckeditor5-upload",
   "version": "19.0.0",
-  "description": "Upload Feature for CKEditor 5.",
+  "description": "Inhanced upload Feature for CKEditor 5.",
   "keywords": [
     "ckeditor",
     "ckeditor5",
@@ -25,13 +25,13 @@
     "node": ">=8.0.0",
     "npm": ">=5.7.1"
   },
-  "author": "CKSource (http://cksource.com/)",
+  "author": "suhayb",
   "license": "GPL-2.0-or-later",
   "homepage": "https://ckeditor.com/ckeditor-5",
-  "bugs": "https://github.com/ckeditor/ckeditor5/issues",
+  "bugs": "https://github.com/ksuhiyp/ckeditor5-upload/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ckeditor/ckeditor5-upload.git"
+    "url": "https://github.com/ksuhiyp/ckeditor5-upload.git"
   },
   "files": [
     "lang",

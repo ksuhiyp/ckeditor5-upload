@@ -43,7 +43,7 @@ export default class SimpleUploadAdapter extends Plugin {
 	 * @inheritDoc
 	 */
 	static get requires() {
-		return [ FileRepository ];
+		return [FileRepository];
 	}
 
 	/**
@@ -57,13 +57,13 @@ export default class SimpleUploadAdapter extends Plugin {
 	 * @inheritDoc
 	 */
 	init() {
-		const options = this.editor.config.get( 'simpleUpload' );
+		const options = this.editor.config.get('simpleUpload');
 
-		if ( !options ) {
+		if (!options) {
 			return;
 		}
 
-		if ( !options.uploadUrl ) {
+		if (!options.uploadUrl) {
 			/**
 			 * The {@link module:upload/adapters/simpleuploadadapter~SimpleUploadConfig#uploadUrl `config.simpleUpload.uploadUrl`}
 			 * configuration required by the {@link module:upload/adapters/simpleuploadadapter~SimpleUploadAdapter `SimpleUploadAdapter`}
@@ -71,15 +71,15 @@ export default class SimpleUploadAdapter extends Plugin {
 			 *
 			 * @error simple-upload-adapter-missing-uploadUrl
 			 */
-			console.warn( attachLinkToDocumentation(
+			console.warn(attachLinkToDocumentation(
 				'simple-upload-adapter-missing-uploadUrl: Missing the "uploadUrl" property in the "simpleUpload" editor configuration.'
-			) );
+			));
 
 			return;
 		}
 
-		this.editor.plugins.get( FileRepository ).createUploadAdapter = loader => {
-			return new Adapter( loader, options );
+		this.editor.plugins.get(FileRepository).createUploadAdapter = loader => {
+			return new Adapter(loader, options);
 		};
 	}
 }
@@ -97,7 +97,7 @@ class Adapter {
 	 * @param {module:upload/filerepository~FileLoader} loader
 	 * @param {module:upload/adapters/simpleuploadadapter~SimpleUploadConfig} options
 	 */
-	constructor( loader, options ) {
+	constructor(loader, options) {
 		/**
 		 * FileLoader instance to use during the upload.
 		 *
@@ -121,11 +121,11 @@ class Adapter {
 	 */
 	upload() {
 		return this.loader.file
-			.then( file => new Promise( ( resolve, reject ) => {
+			.then(file => new Promise((resolve, reject) => {
 				this._initRequest();
-				this._initListeners( resolve, reject, file );
-				this._sendRequest( file );
-			} ) );
+				this._initListeners(resolve, reject, file);
+				this._sendRequest(file);
+			}));
 	}
 
 	/**
@@ -135,7 +135,7 @@ class Adapter {
 	 * @returns {Promise}
 	 */
 	abort() {
-		if ( this.xhr ) {
+		if (this.xhr) {
 			this.xhr.abort();
 		}
 	}
@@ -149,8 +149,8 @@ class Adapter {
 	 */
 	_initRequest() {
 		const xhr = this.xhr = new XMLHttpRequest();
-
-		xhr.open( 'POST', this.options.uploadUrl, true );
+		const method = this.options.method || 'POST';
+		xhr.open(method, this.options.uploadUrl, true);
 		xhr.responseType = 'json';
 	}
 
@@ -162,32 +162,32 @@ class Adapter {
 	 * @param {Function} reject Callback function to be called when the request cannot be completed.
 	 * @param {File} file Native File object.
 	 */
-	_initListeners( resolve, reject, file ) {
+	_initListeners(resolve, reject, file) {
 		const xhr = this.xhr;
 		const loader = this.loader;
-		const genericErrorText = `Couldn't upload file: ${ file.name }.`;
+		const genericErrorText = `Couldn't upload file: ${file.name}.`;
 
-		xhr.addEventListener( 'error', () => reject( genericErrorText ) );
-		xhr.addEventListener( 'abort', () => reject() );
-		xhr.addEventListener( 'load', () => {
+		xhr.addEventListener('error', () => reject(genericErrorText));
+		xhr.addEventListener('abort', () => reject());
+		xhr.addEventListener('load', () => {
 			const response = xhr.response;
 
-			if ( !response || response.error ) {
-				return reject( response && response.error && response.error.message ? response.error.message : genericErrorText );
+			if (!response || response.error) {
+				return reject(response && response.error && response.error.message ? response.error.message : genericErrorText);
 			}
 
-			resolve( response.url ? { default: response.url } : response.urls );
-		} );
+			resolve(response.url ? { default: response.url } : response.urls);
+		});
 
 		// Upload progress when it is supported.
 		/* istanbul ignore else */
-		if ( xhr.upload ) {
-			xhr.upload.addEventListener( 'progress', evt => {
-				if ( evt.lengthComputable ) {
+		if (xhr.upload) {
+			xhr.upload.addEventListener('progress', evt => {
+				if (evt.lengthComputable) {
 					loader.uploadTotal = evt.total;
 					loader.uploaded = evt.loaded;
 				}
-			} );
+			});
 		}
 	}
 
@@ -197,21 +197,21 @@ class Adapter {
 	 * @private
 	 * @param {File} file File instance to be uploaded.
 	 */
-	_sendRequest( file ) {
+	_sendRequest(file) {
 		// Set headers if specified.
 		const headers = this.options.headers || {};
-
-		for ( const headerName of Object.keys( headers ) ) {
-			this.xhr.setRequestHeader( headerName, headers[ headerName ] );
+		const fieldName = this.options.fieldName || 'upload'
+		for (const headerName of Object.keys(headers)) {
+			this.xhr.setRequestHeader(headerName, headers[headerName]);
 		}
 
 		// Prepare the form data.
 		const data = new FormData();
 
-		data.append( 'upload', file );
+		data.append(fieldName, file);
 
 		// Send the request.
-		this.xhr.send( data );
+		this.xhr.send(data);
 	}
 }
 
